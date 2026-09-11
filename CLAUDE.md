@@ -9,17 +9,3 @@ Each instance is a full docker stack (PrestaShop app + MySQL + maildev) made ind
 Multiple Claude Code conversations may work in this workbench at the same time. Before using a shop instance (starting it, running tests against it, changing its data, etc.), a conversation must claim it with a lock file to avoid two conversations colliding on the same instance.
 
 Use skill /shop-lock when a conversation starts.
-
-## How to add a new instance
-
-To bring up a new shop instance (named `PrestaShop-<N>` below, adjust to the next free number):
-
-1. Run `git clone git@github.com:PrestaShop/PrestaShop.git PrestaShop-<N>`.
-2. In `PrestaShop-<N>/docker-compose.yml`, parameterize the hardcoded ports and network name so they can be overridden per instance:
-   - `mysql` port mapping → `"${DB_PORT:-3306}:3306"`
-   - `prestashop-git` port mappings → `"${HTTP_PORT:-8001}:80"` and `"${HTTPS_PORT:-8002}:443"`
-   - `maildev` port mappings → `"${MAILDEV_UI_PORT:-1080}:1080"` and `"${MAILDEV_SMTP_PORT:-1025}:1025"`
-   - the `prestashop-network` entry under `networks:` → keep the key as `prestashop-network` but set `name: ${NETWORK_NAME:-prestashop-network}` (only the `name:` value is interpolated; the top-level network key itself is not)
-3. Create `PrestaShop-<N>/.env` with values unique to this instance: `COMPOSE_PROJECT_NAME`, `NETWORK_NAME`, `HTTP_PORT`, `HTTPS_PORT`, `DB_PORT`, `MAILDEV_UI_PORT`, `MAILDEV_SMTP_PORT`, and `PS_DOMAIN=localhost:<HTTP_PORT>`. Pick ports that don't collide with any other instance (existing or unrelated docker stacks on the host).
-4. Run `make docker-up` from inside `PrestaShop-<N>/`.
-5. Wait for the automatic install to finish (composer install, asset build, DB install — this can take a while, especially if run alongside other instances), then verify the shop is alive: `curl http://localhost:<HTTP_PORT>/` should return 200.
