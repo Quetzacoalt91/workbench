@@ -8,13 +8,7 @@ Each instance is a full docker stack (PrestaShop app + MySQL + maildev) made ind
 
 Multiple Claude Code conversations may work in this workbench at the same time. Before using a shop instance (starting it, running tests against it, changing its data, etc.), a conversation must claim it with a lock file to avoid two conversations colliding on the same instance.
 
-- Lock file location: this folder (the workbench root), not inside the instance subfolder.
-- Lock file name: `<name>.lock`, where `<name>` matches the instance's subfolder name (e.g. `PrestaShop-1.lock`).
-- Before using an instance, check whether its lock file already exists. If it does, that shop is in use — pick a different, unlocked instance instead.
-- If it doesn't exist, create it before starting work on that shop, and keep it present for as long as the shop is in use.
-- Remove the lock file when done with the shop (before ending the conversation), so other conversations can use it again.
-- A lock file only needs to exist; its content is not load-bearing, but it's helpful to note what's using it (e.g. a short description and timestamp) in case a stale lock needs to be investigated.
-- If all instances are taken, stop and warn the user.
+Use skill /shop-lock when a conversation starts.
 
 ## How to add a new instance
 
